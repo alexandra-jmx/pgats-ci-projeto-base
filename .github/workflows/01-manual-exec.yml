@@ -40,7 +40,11 @@ jobs:
             - name: Testes E2E (end-to-end)
               run: yarn run e2e
 
+            # por padrão só vai para o próximo step se o anterior teve sucesso. Dá para alterar esse comportamento utilizando expressões
+            # Condicional + expressão / !cancelled = Se não foi cancelado, pode passar ou falhar.
+            # passed, failed, cancelled
             - uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
               with:
                 name: relatorio-de-testes
                 path: ./playwright-report
