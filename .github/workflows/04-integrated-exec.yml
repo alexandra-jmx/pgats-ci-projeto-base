@@ -15,6 +15,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      - name: Instalando dependências
+        run: yarn
+      
+      - name: Padronizacao de codigo (Lint/Prettier)
+        run: yarn lint
+      
+  unit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Instalando Yarn
         run: npm install -g yarn
@@ -22,10 +37,10 @@ jobs:
       - name: Instalando dependências
         run: yarn
 
-      - name: Padronizacao de codigo (Lint/Prettier)
-        run: yarn lint
+      - name: Testes de Unidade
+        run: yarn run test
 
-  #descricao do job
+      #descricao do job
   e2e-tests:
     # maquina que o job vai executar
     runs-on: ubuntu-latest
@@ -46,8 +61,6 @@ jobs:
       - name: Testes E2E (end-to-end)
         run: yarn run e2e
 
-      # por padrão só vai para o próximo step se o anterior teve sucesso. Dá para alterar esse comportamento utilizando expressões
-      # Condicional + expressão / !cancelled = Se não foi cancelado, pode passar ou falhar.
       # passed, failed, cancelled
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
