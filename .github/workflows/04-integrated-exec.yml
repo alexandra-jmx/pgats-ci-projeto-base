@@ -1,7 +1,7 @@
 # CI de Nível 04 - Disparo manual a partir de 1 clique
 
 # O que vai aparecer lá nas opções de piep
-name: 'Execução Manual'
+name: 'Execução Integrada'
 
 # triggers OU gatilhos de execução // Regras de disparo da execução
     # gatilho de exec manual = workflow_dispatch (GitHub Actions)
