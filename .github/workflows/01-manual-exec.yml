@@ -38,7 +38,7 @@ jobs:
               run: yarn playwright install
 
             - name: Testes E2E (end-to-end)
-              run: yarn playright install
+              run: yarn playwright install
 
             
         
