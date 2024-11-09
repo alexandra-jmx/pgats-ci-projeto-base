@@ -1,0 +1,48 @@
+# CI de Nível 02 - Disparo automático em períodos definidos
+
+name: 'Execução Agendada'
+
+# triggers OU gatilhos de execução // Regras de disparo da execução
+# gatilho de exec manual = schedule
+
+on: 
+    schedule:
+      # regra de agendamento. Tem que cuidar a questão do fuso horário
+      - cron: '0 22 * * 6'
+
+jobs:
+    #descricao do job
+    e2e-tests:
+
+        # maquina que o job vai executar
+        runs-on: ubuntu-latest
+
+        # passo a passo das acoes do job
+        steps: 
+            - uses: actions/checkout@v4
+            
+            # a principio não vai ser necessário, mas...continue-on-error: 
+            #- uses: actions/setup-node@v4
+            #  with:
+            #    node-version: lts/*
+
+            - name: Instalando Yarn
+              run: npm install -g yarn
+
+            - name: Instalando dependências
+              run: yarn
+
+            - name: Instalando Playwright
+              run: yarn playwright install
+
+            - name: Testes E2E (end-to-end)
+              run: yarn run e2e
+
+            # por padrão só vai para o próximo step se o anterior teve sucesso. Dá para alterar esse comportamento utilizando expressões
+            # Condicional + expressão / !cancelled = Se não foi cancelado, pode passar ou falhar.
+            # passed, failed, cancelled
+            - uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                name: relatorio-de-testes
+                path: ./playwright-report
