@@ -15,16 +15,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Instalando Yarn
         run: npm install -g yarn
 
       - name: Instalando dependências
         run: yarn
-      
+
       - name: Padronizacao de codigo (Lint/Prettier)
         run: yarn lint
-      
+
   unit:
     runs-on: ubuntu-latest
 
@@ -58,8 +58,14 @@ jobs:
       - name: Instalando Playwright
         run: yarn playwright install
 
+      - name: Subir aplicacao local
+        run: yarn start &
+        # o & é para seguir executando em segundo plano e permita continuar os próximos passos
+
       - name: Testes E2E (end-to-end)
         run: yarn run e2e
+        env:
+          URL: 'http://localhost:3000'
 
       # passed, failed, cancelled
       - uses: actions/upload-artifact@v4
