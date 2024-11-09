@@ -5,49 +5,48 @@ name: 'Execução por Deploy'
 # triggers OU gatilhos de execução // Regras de disparo da execução
 # gatilho de exec após outro workflow = workflow_run
 
-on: 
-    workflow_run:
-      # Em um projeto real aqui seria o pipeline dedicado ao deploy
-      workflows: ['Execução Manual']
-      types:
-        - completed
-        # executa ffsempre que o outro pipeline for completado
+on:
+  workflow_run:
+    # Em um projeto real aqui seria o pipeline dedicado ao deploy
+    workflows: ['Execução Manual']
+    types:
+      - completed
+      # executa ffsempre que o outro pipeline for completado
 
 jobs:
-    #descricao do job
-    e2e-tests:
+  #descricao do job
+  e2e-tests:
+    # maquina que o job vai executar
+    runs-on: ubuntu-latest
 
-        # maquina que o job vai executar
-        runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
-        
-        # passo a passo das acoes do job
-        steps: 
-            - uses: actions/checkout@v4
-            
-            # a principio não vai ser necessário, mas...continue-on-error: 
-            #- uses: actions/setup-node@v4
-            #  with:
-            #    node-version: lts/*
+    # passo a passo das acoes do job
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Instalando Yarn
-              run: npm install -g yarn
+      # a principio não vai ser necessário, mas...continue-on-error:
+      #- uses: actions/setup-node@v4
+      #  with:
+      #    node-version: lts/*
 
-            - name: Instalando dependências
-              run: yarn
+      - name: Instalando Yarn
+        run: npm install -g yarn
 
-            - name: Instalando Playwright
-              run: yarn playwright install
+      - name: Instalando dependências
+        run: yarn
 
-            - name: Testes E2E (end-to-end)
-              run: yarn run e2e
+      - name: Instalando Playwright
+        run: yarn playwright install
 
-            # por padrão só vai para o próximo step se o anterior teve sucesso. Dá para alterar esse comportamento utilizando expressões
-            # Condicional + expressão / !cancelled = Se não foi cancelado, pode passar ou falhar.
-            # passed, failed, cancelled
-            - uses: actions/upload-artifact@v4
-              if: ${{ !cancelled() }}
-              with:
-                name: relatorio-de-testes
-                path: ./playwright-report
+      - name: Testes E2E (end-to-end)
+        run: yarn run e2e
+
+      # por padrão só vai para o próximo step se o anterior teve sucesso. Dá para alterar esse comportamento utilizando expressões
+      # Condicional + expressão / !cancelled = Se não foi cancelado, pode passar ou falhar.
+      # passed, failed, cancelled
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: relatorio-de-testes
+          path: ./playwright-report
